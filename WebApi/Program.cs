@@ -1,20 +1,26 @@
+using Azure.Communication.Email;
+using Azure.Messaging.ServiceBus;
+using WebApi.Interfaces;
+using WebApi.Services;
+
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddSingleton(x => new EmailClient(builder.Configuration["ACS:ConnectionString"]));
+builder.Services.AddSingleton(new ServiceBusClient(builder.Configuration["ASB:ConnectionString"]));
+builder.Services.AddSingleton<ServiceBusListener>();
+builder.Services.AddSingleton<ISendEmailService, SendEmailService>();
+builder.Services.AddSingleton<ISendEmailConfirmationLinkService, SendEmailConfirmationLinkService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+var listener = app.Services.GetRequiredService<ServiceBusListener>();
+await listener.StartAsync();
 
+app.MapOpenApi();
 app.UseHttpsRedirection();
+app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
 app.UseAuthorization();
 
