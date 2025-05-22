@@ -16,7 +16,7 @@ public class ServiceBusListener
     public ServiceBusListener(IConfiguration configuration, ServiceBusClient client, ISendEmailConfirmationLinkService sendEmailConfirmationLinkService)
     {
         _client = client;
-        _configuration = configuration;
+        _configuration = configuration; 
         _processor = _client.CreateProcessor(_configuration["ASB:QueueName"], new ServiceBusProcessorOptions());
         _processor.ProcessMessageAsync += OnMessageReceivedAsync;
         _processor.ProcessErrorAsync += ErrorHandlerAsync;

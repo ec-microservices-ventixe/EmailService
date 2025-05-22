@@ -28,7 +28,7 @@ public class SendEmailService(EmailClient client, IConfiguration configuration) 
                 recipients: new EmailRecipients(emailsList)
                 );
 
-            EmailSendOperation emailSendOperation = _client.Send(Azure.WaitUntil.Completed, emailMessage);
+            EmailSendOperation emailSendOperation = _client.Send(Azure.WaitUntil.Started, emailMessage);
             return true;
 
         }
